@@ -1,0 +1,10 @@
+options:
+  OPENBW_ENABLE_UI: 0
+  # For mac replace with this
+  #BWAPI_CONFIG_AI__AI: BWEnv/build/BWEnv.dylib
+
+  # You may override this through command line environment options
+  BWAPI_INSTALL_PREFIX: ~/Public/bwapi
+  # Replace with your own starcraft map
+  BWAPI_CONFIG_AUTO_MENU__MAP: ../gym-starcraft/maps/micro-empty.scm
+  BWAPI_CONFIG_AI__AI: BWEnv/build/BWEnv.so

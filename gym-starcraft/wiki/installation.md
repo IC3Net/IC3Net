@@ -1,0 +1,18 @@
+**Note:** If you are looking to install without root, have a look at other [wiki](https://github.com/IC3Net/IC3Net/blob/master/gym-starcraft/wiki/installing-without-root.md).
+- Create a directory where you want to install TorchCraft. In our wiki, we assume that location to be `~/Public`. Replace it with your directory in further steps.
+- `mkdir ~/Public`
+- `cd ~/Public`
+- `git clone https://github.com/TorchCraft/TorchCraft`
+- `cd TorchCraft && git submodule update --init --recursive`
+- Now we will install zstd
+- `git clone https://github.com/facebook/zstd.git`
+- `cd zstd && sudo make install`
+- `apt-get install libczmq-dev`. Use `sudo` if needed.
+- `sudo apt-get install libsdl2-2.0 cmake`
+- `git clone https://github.com/openbw/openbw`
+- `git clone https://github.com/openbw/bwapi`
+- `cd bwapi && mkdir build && cd build`
+- `cmake .. -DCMAKE_BUILD_TYPE=Release -DOPENBW_DIR=../../openbw -DOPENBW_ENABLE_UI=1 -DCMAKE_INSTALL_PREFIX=~/Public/bwapi`
+- `make install`
+- `cd ~/Public/TorchCraft/BWEnv; mkdir -p build && cd build`
+- `cmake .. -DCMAKE_BUILD_TYPE=relwithdebinfo -DBWAPI_DIR=../../bwapi/ && make -j`

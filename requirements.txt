@@ -1,0 +1,6 @@
+numpy==1.13.3
+visdom==0.1.4
+#gym.egg==info
+torch==0.3.0.post4
+Pillow==5.0.0
+gym==0.9.6
