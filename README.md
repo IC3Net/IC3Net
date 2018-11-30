@@ -27,6 +27,9 @@ pip install -r requirements.txt
 
 Once everything is installed, we can run the using these example commands
 
+Note: We performed our experiments on `nthreads` set to 16, you can change it according to your machine, but the plots may vary.
+
+Note: Use `OMP_NUM_THREADS=1` to limit the number of threads spawned
 
 ### Predator-Prey
 
@@ -61,18 +64,55 @@ For medium version, change the following arguments:
 - `dim` to 10
 
 
-For medium version, change the following arguments:
+For hard version, change the following arguments:
 - `nagents` to 20
 - `max_steps` to 80
 - `vision` to 2
 - `dim` to 20
 
-Note: We performed our experiments on `nthreads` set to 16, you can change it according to your machine, but the plots may vary.
-
-Note: Use `OMP_NUM_THREADS=1` to limit the number of threads spawned
 
 ## Traffic Junction
 
+- IC3Net on easy version
+
+```
+python main.py --env_name traffic_junction --nagents 5 --nthreads 16 --num_epochs 2000 --hid_size 128 --detach_gap 10 --lrate 0.001 --dim 6 --max_steps 20 --ic3net --vision 0 --recurrent --add_rate_min 0.1 --add_rate_max 0.3 --curr_start 250 --curr_end 1250 --difficulty easy
+```
+
+- CommNet on easy version
+
+```
+python main.py --env_name predator_prey --nagents 5 --nthreads 16 --num_epochs 2000 --hid_size 128 --detach_gap 10 --lrate 0.001 --dim 6 --max_steps 20 --commnet --vision 0 --recurrent  --add_rate_min 0.1 --add_rate_max 0.3 --curr_start 250 --curr_end 1250 --difficulty easy
+```
+
+- IC on easy version
+
+```
+python main.py --env_name predator_prey --nagents 5 --nthreads 16 --num_epochs 2000 --hid_size 128 --detach_gap 10 --lrate 0.001 --dim 6 --max_steps 20 --vision 0 --recurrent  --add_rate_min 0.1 --add_rate_max 0.3 --curr_start 250 --curr_end 1250 --difficulty easy
+```
+
+- IRIC on easy version
+
+```
+python main.py --env_name predator_prey --nagents 5 --nthreads 16 --num_epochs 2000 --hid_size 128 --detach_gap 10 --lrate 0.001 --dim 6 --max_steps 20 --mean_ratio 0 --vision 0 --recurrent --add_rate_min 0.1 --add_rate_max 0.3 --curr_start 250 --curr_end 1250 --difficulty easy
+```
+
+For medium version, change the following arguments:
+- `nagents` to 10
+- `max_steps` to 40
+- `dim` to 14
+- `add_rate_min` to 0.05
+- `add_rate_max` to 0.02
+- `difficulty` to medium
+
+
+For hard version, change the following arguments:
+- `nagents` to 20
+- `max_steps` to 80
+- `dim` to 18
+- `add_rate_min` to 0.02
+- `add_rate_max` to 0.05
+- `difficulty` to hard
 
 ## StarCraft
 
