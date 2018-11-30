@@ -2,7 +2,7 @@
 
 This repository contains reference implementation for IC3Net paper.
 
-## Installations
+## Installation
 
 First, clone the repo and install ic3net-envs which contains implementation for Predator-Prey and Traffic-Junction
 
@@ -12,9 +12,7 @@ cd IC3Net/ic3net-envs
 python setup.py develop
 ```
 
-*Optional*
-
-If you want to run experiments on StarCraft, install the `gym-starcraft` package included in this package. Follow the instructions provided in README inside that packages.
+**Optional**: If you want to run experiments on StarCraft, install the `gym-starcraft` package included in this package. Follow the instructions provided in README inside that packages.
 
 
 Next, we need to install dependencies for IC3Net including PyTorch. For doing that run:
@@ -71,7 +69,7 @@ For hard version, change the following arguments:
 - `dim` to 20
 
 
-## Traffic Junction
+### Traffic Junction
 
 - IC3Net on easy version
 
@@ -114,7 +112,7 @@ For hard version, change the following arguments:
 - `add_rate_max` to 0.05
 - `difficulty` to hard
 
-## StarCraft
+### StarCraft
 
 Make sure you have gym-starcraft properly installed and configuration properly configured.
 
