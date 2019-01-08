@@ -1,6 +1,24 @@
 # IC3Net
 
-This repository contains reference implementation for IC3Net paper.
+This repository contains reference implementation for IC3Net paper (accepted to ICLR 2019), **Learning when to communicate at scale in multiagent cooperative and competitive tasks**, available at [https://arxiv.org/abs/1812.09755](https://arxiv.org/abs/1812.09755)
+
+## Cite
+
+If you use this code or IC3Net in your work, please cite the following:
+
+```
+@article{singh2018learning,
+  title={Learning when to Communicate at Scale in Multiagent Cooperative and Competitive Tasks},
+  author={Singh, Amanpreet and Jain, Tushar and Sukhbaatar, Sainbayar},
+  journal={arXiv preprint arXiv:1812.09755},
+  year={2018}
+}
+```
+
+## Standalone environment version
+
+- Find `gym-starcraft` at this repository: [apsdehal/gym-starcraft](https://github.com/apsdehal/gym-starcraft)
+- Find `ic3net-envs` at this repository: [apsdehal/ic3net-envs](https://github.com/apsdehal/ic3net-envs)
 
 ## Installation
 
@@ -165,3 +183,13 @@ python -u main.py --env_name starcraft --task_type combat --nagents 10 --num_epo
 ```
 python -u main.py --env_name starcraft --task_type combat --nagents 10 --num_epochs 1000 --hid_size 128 --lrate 0.002 --max_steps 60 --nthreads 16 --torchcraft_dir=~/Public/TorchCraft --frame_skip 8 --nenemies 3 --our_unit_type 0 --enemy_unit_type 65 --init_range_end 150 --recurrent --rnn_type LSTM --detach_gap 10 --explore_vision 10 --step_size 16
 ```
+
+## Contributors
+
+- Amanpreet Singh ([@apsdehal](https://github.com/apsdehal))
+- Tushar Jain ([@tshrjn](https://github.com/tshrjn))
+- Sainbayar Sukhbaatar ([@tesatory](https://github.com/tesatory))
+
+## License
+
+Code is available under MIT license.
