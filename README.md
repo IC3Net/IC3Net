@@ -52,38 +52,38 @@ Note: Use `OMP_NUM_THREADS=1` to limit the number of threads spawned
 - IC3Net on easy version
 
 ```
-python main.py --env_name predator_prey --nagents 5 --nthreads 16 --num_epochs 2000 --hid_size 128 --detach_gap 10 --lrate 0.001 --dim 5 --max_steps 20 --ic3net --vision 0 --recurrent
+python main.py --env_name predator_prey --nagents 3 --nthreads 16 --num_epochs 2000 --hid_size 128 --detach_gap 10 --lrate 0.001 --dim 5 --max_steps 20 --ic3net --vision 0 --recurrent
 ```
 
 - CommNet on easy version
 
 ```
-python main.py --env_name predator_prey --nagents 5 --nthreads 16 --num_epochs 2000 --hid_size 128 --detach_gap 10 --lrate 0.001 --dim 5 --max_steps 20 --commnet --vision 0 --recurrent
+python main.py --env_name predator_prey --nagents 3 --nthreads 16 --num_epochs 2000 --hid_size 128 --detach_gap 10 --lrate 0.001 --dim 5 --max_steps 20 --commnet --vision 0 --recurrent
 ```
 
 - IC on easy version
 
 ```
-python main.py --env_name predator_prey --nagents 5 --nthreads 16 --num_epochs 2000 --hid_size 128 --detach_gap 10 --lrate 0.001 --dim 5 --max_steps 20 --vision 0 --recurrent
+python main.py --env_name predator_prey --nagents 3 --nthreads 16 --num_epochs 2000 --hid_size 128 --detach_gap 10 --lrate 0.001 --dim 5 --max_steps 20 --vision 0 --recurrent
 ```
 
 - IRIC on easy version
 
 ```
-python main.py --env_name predator_prey --nagents 5 --nthreads 16 --num_epochs 2000 --hid_size 128 --detach_gap 10 --lrate 0.001 --dim 5 --max_steps 20 --mean_ratio 0 --vision 0 --recurrent
+python main.py --env_name predator_prey --nagents 3 --nthreads 16 --num_epochs 2000 --hid_size 128 --detach_gap 10 --lrate 0.001 --dim 5 --max_steps 20 --mean_ratio 0 --vision 0 --recurrent
 ```
 
 For medium version, change the following arguments:
-- `nagents` to 10
+- `nagents` to 5
 - `max_steps` to 40
 - `vision` to 1
 - `dim` to 10
 
 
 For hard version, change the following arguments:
-- `nagents` to 20
+- `nagents` to 10
 - `max_steps` to 80
-- `vision` to 2
+- `vision` to 1
 - `dim` to 20
 
 
