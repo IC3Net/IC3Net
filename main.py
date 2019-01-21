@@ -12,7 +12,7 @@ from comm import CommNetMLP
 from utils import *
 from action_utils import parse_action_args
 from trainer import Trainer
-from multi_threading import ThreadedTrainer
+from multi_processing import MultiProcessTrainer
 
 torch.utils.backcompat.broadcast_warning.enabled = True
 torch.utils.backcompat.keepdim_warning.enabled = True
@@ -21,15 +21,15 @@ torch.set_default_tensor_type('torch.DoubleTensor')
 
 parser = argparse.ArgumentParser(description='PyTorch RL trainer')
 # training
-# note: number of steps per epoch = epoch_size X batch_size x nthreads
+# note: number of steps per epoch = epoch_size X batch_size x nprocesses
 parser.add_argument('--num_epochs', default=100, type=int,
                     help='number of training epochs')
 parser.add_argument('--epoch_size', type=int, default=10,
                     help='number of update iterations in an epoch')
 parser.add_argument('--batch_size', type=int, default=500,
                     help='number of steps before each update (per thread)')
-parser.add_argument('--nthreads', type=int, default=16,
-                    help='How many threads to run')
+parser.add_argument('--nprocesses', type=int, default=16,
+                    help='How many processes to run')
 # model
 parser.add_argument('--hid_size', default=64, type=int,
                     help='hidden layer size')
@@ -173,8 +173,8 @@ if not args.display:
 for p in policy_net.parameters():
     p.data.share_memory_()
 
-if args.nthreads > 1:
-    trainer = ThreadedTrainer(args, lambda: Trainer(args, policy_net, data.init(args.env_name, args)))
+if args.nprocesses > 1:
+    trainer = MultiProcessTrainer(args, lambda: Trainer(args, policy_net, data.init(args.env_name, args)))
 else:
     trainer = Trainer(args, policy_net, data.init(args.env_name, args))
 
@@ -285,7 +285,7 @@ if args.display:
 if args.save != '':
     save(args.save)
 
-if sys.flags.interactive == 0 and args.nthreads > 1:
+if sys.flags.interactive == 0 and args.nprocesses > 1:
     trainer.quit()
     import os
     os._exit(0)

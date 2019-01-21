@@ -43,7 +43,7 @@ pip install -r requirements.txt
 
 Once everything is installed, we can run the using these example commands
 
-Note: We performed our experiments on `nthreads` set to 16, you can change it according to your machine, but the plots may vary.
+Note: We performed our experiments on `nprocesses` set to 16, you can change it according to your machine, but the plots may vary.
 
 Note: Use `OMP_NUM_THREADS=1` to limit the number of threads spawned
 
@@ -52,25 +52,25 @@ Note: Use `OMP_NUM_THREADS=1` to limit the number of threads spawned
 - IC3Net on easy version
 
 ```
-python main.py --env_name predator_prey --nagents 3 --nthreads 16 --num_epochs 2000 --hid_size 128 --detach_gap 10 --lrate 0.001 --dim 5 --max_steps 20 --ic3net --vision 0 --recurrent
+python main.py --env_name predator_prey --nagents 3 --nprocesses 16 --num_epochs 2000 --hid_size 128 --detach_gap 10 --lrate 0.001 --dim 5 --max_steps 20 --ic3net --vision 0 --recurrent
 ```
 
 - CommNet on easy version
 
 ```
-python main.py --env_name predator_prey --nagents 3 --nthreads 16 --num_epochs 2000 --hid_size 128 --detach_gap 10 --lrate 0.001 --dim 5 --max_steps 20 --commnet --vision 0 --recurrent
+python main.py --env_name predator_prey --nagents 3 --nprocesses 16 --num_epochs 2000 --hid_size 128 --detach_gap 10 --lrate 0.001 --dim 5 --max_steps 20 --commnet --vision 0 --recurrent
 ```
 
 - IC on easy version
 
 ```
-python main.py --env_name predator_prey --nagents 3 --nthreads 16 --num_epochs 2000 --hid_size 128 --detach_gap 10 --lrate 0.001 --dim 5 --max_steps 20 --vision 0 --recurrent
+python main.py --env_name predator_prey --nagents 3 --nprocesses 16 --num_epochs 2000 --hid_size 128 --detach_gap 10 --lrate 0.001 --dim 5 --max_steps 20 --vision 0 --recurrent
 ```
 
 - IRIC on easy version
 
 ```
-python main.py --env_name predator_prey --nagents 3 --nthreads 16 --num_epochs 2000 --hid_size 128 --detach_gap 10 --lrate 0.001 --dim 5 --max_steps 20 --mean_ratio 0 --vision 0 --recurrent
+python main.py --env_name predator_prey --nagents 3 --nprocesses 16 --num_epochs 2000 --hid_size 128 --detach_gap 10 --lrate 0.001 --dim 5 --max_steps 20 --mean_ratio 0 --vision 0 --recurrent
 ```
 
 For medium version, change the following arguments:
@@ -92,25 +92,25 @@ For hard version, change the following arguments:
 - IC3Net on easy version
 
 ```
-python main.py --env_name traffic_junction --nagents 5 --nthreads 16 --num_epochs 2000 --hid_size 128 --detach_gap 10 --lrate 0.001 --dim 6 --max_steps 20 --ic3net --vision 0 --recurrent --add_rate_min 0.1 --add_rate_max 0.3 --curr_start 250 --curr_end 1250 --difficulty easy
+python main.py --env_name traffic_junction --nagents 5 --nprocesses 16 --num_epochs 2000 --hid_size 128 --detach_gap 10 --lrate 0.001 --dim 6 --max_steps 20 --ic3net --vision 0 --recurrent --add_rate_min 0.1 --add_rate_max 0.3 --curr_start 250 --curr_end 1250 --difficulty easy
 ```
 
 - CommNet on easy version
 
 ```
-python main.py --env_name predator_prey --nagents 5 --nthreads 16 --num_epochs 2000 --hid_size 128 --detach_gap 10 --lrate 0.001 --dim 6 --max_steps 20 --commnet --vision 0 --recurrent  --add_rate_min 0.1 --add_rate_max 0.3 --curr_start 250 --curr_end 1250 --difficulty easy
+python main.py --env_name predator_prey --nagents 5 --nprocesses 16 --num_epochs 2000 --hid_size 128 --detach_gap 10 --lrate 0.001 --dim 6 --max_steps 20 --commnet --vision 0 --recurrent  --add_rate_min 0.1 --add_rate_max 0.3 --curr_start 250 --curr_end 1250 --difficulty easy
 ```
 
 - IC on easy version
 
 ```
-python main.py --env_name predator_prey --nagents 5 --nthreads 16 --num_epochs 2000 --hid_size 128 --detach_gap 10 --lrate 0.001 --dim 6 --max_steps 20 --vision 0 --recurrent  --add_rate_min 0.1 --add_rate_max 0.3 --curr_start 250 --curr_end 1250 --difficulty easy
+python main.py --env_name predator_prey --nagents 5 --nprocesses 16 --num_epochs 2000 --hid_size 128 --detach_gap 10 --lrate 0.001 --dim 6 --max_steps 20 --vision 0 --recurrent  --add_rate_min 0.1 --add_rate_max 0.3 --curr_start 250 --curr_end 1250 --difficulty easy
 ```
 
 - IRIC on easy version
 
 ```
-python main.py --env_name predator_prey --nagents 5 --nthreads 16 --num_epochs 2000 --hid_size 128 --detach_gap 10 --lrate 0.001 --dim 6 --max_steps 20 --mean_ratio 0 --vision 0 --recurrent --add_rate_min 0.1 --add_rate_max 0.3 --curr_start 250 --curr_end 1250 --difficulty easy
+python main.py --env_name predator_prey --nagents 5 --nprocesses 16 --num_epochs 2000 --hid_size 128 --detach_gap 10 --lrate 0.001 --dim 6 --max_steps 20 --mean_ratio 0 --vision 0 --recurrent --add_rate_min 0.1 --add_rate_max 0.3 --curr_start 250 --curr_end 1250 --difficulty easy
 ```
 
 For medium version, change the following arguments:
@@ -139,23 +139,23 @@ For explore task 50x50, 10Medic, see the examples below, replace `torchcraft_dir
 - IC3Net
 
 ```
-python -u main.py --env_name starcraft --task_type explore --nagents 10 --num_epochs 1000 --hid_size 128 --lrate 0.002 --max_steps 60 --nthreads 16 --torchcraft_dir=~/Public/TorchCraft --frame_skip 8 --nenemies 1 --our_unit_type 34 --enemy_unit_type 34 --init_range_end 150 --ic3net --recurrent --rnn_type LSTM --detach_gap 10 --stay_near_enemy --explore_vision 10 --step_size 16
+python -u main.py --env_name starcraft --task_type explore --nagents 10 --num_epochs 1000 --hid_size 128 --lrate 0.002 --max_steps 60 --nprocesses 16 --torchcraft_dir=~/Public/TorchCraft --frame_skip 8 --nenemies 1 --our_unit_type 34 --enemy_unit_type 34 --init_range_end 150 --ic3net --recurrent --rnn_type LSTM --detach_gap 10 --stay_near_enemy --explore_vision 10 --step_size 16
 ```
 
 - CommNet
 
 ```
-python -u main.py --env_name starcraft --task_type explore --nagents 10 --num_epochs 1000 --hid_size 128 --lrate 0.002 --max_steps 60 --nthreads 16 --torchcraft_dir=~/Public/TorchCraft --frame_skip 8 --nenemies 1 --our_unit_type 34 --enemy_unit_type 34 --init_range_end 150 --commnet --recurrent --rnn_type LSTM --detach_gap 10 --stay_near_enemy --explore_vision 10 --step_size 16
+python -u main.py --env_name starcraft --task_type explore --nagents 10 --num_epochs 1000 --hid_size 128 --lrate 0.002 --max_steps 60 --nprocesses 16 --torchcraft_dir=~/Public/TorchCraft --frame_skip 8 --nenemies 1 --our_unit_type 34 --enemy_unit_type 34 --init_range_end 150 --commnet --recurrent --rnn_type LSTM --detach_gap 10 --stay_near_enemy --explore_vision 10 --step_size 16
 ```
 
 - IRIC
 ```
-python -u main.py --env_name starcraft --task_type explore --nagents 10 --num_epochs 1000 --hid_size 128 --lrate 0.002 --max_steps 60 --nthreads 16 --torchcraft_dir=~/Public/TorchCraft --frame_skip 8 --nenemies 1 --our_unit_type 34 --enemy_unit_type 34 --init_range_end 150 --mean_ratio 0 --recurrent --rnn_type LSTM --detach_gap 10 --stay_near_enemy --explore_vision 10 --step_size 16
+python -u main.py --env_name starcraft --task_type explore --nagents 10 --num_epochs 1000 --hid_size 128 --lrate 0.002 --max_steps 60 --nprocesses 16 --torchcraft_dir=~/Public/TorchCraft --frame_skip 8 --nenemies 1 --our_unit_type 34 --enemy_unit_type 34 --init_range_end 150 --mean_ratio 0 --recurrent --rnn_type LSTM --detach_gap 10 --stay_near_enemy --explore_vision 10 --step_size 16
 ```
 
 - IC
 ```
-python -u main.py --env_name starcraft --task_type explore --nagents 10 --num_epochs 1000 --hid_size 128 --lrate 0.002 --max_steps 60 --nthreads 16 --torchcraft_dir=~/Public/TorchCraft --frame_skip 8 --nenemies 1 --our_unit_type 34 --enemy_unit_type 34 --init_range_end 150 --recurrent --rnn_type LSTM --detach_gap 10 --stay_near_enemy --explore_vision 10 --step_size 16
+python -u main.py --env_name starcraft --task_type explore --nagents 10 --num_epochs 1000 --hid_size 128 --lrate 0.002 --max_steps 60 --nprocesses 16 --torchcraft_dir=~/Public/TorchCraft --frame_skip 8 --nenemies 1 --our_unit_type 34 --enemy_unit_type 34 --init_range_end 150 --recurrent --rnn_type LSTM --detach_gap 10 --stay_near_enemy --explore_vision 10 --step_size 16
 ```
 
 For 75x75, set `--init_range_end` to 175.
@@ -164,24 +164,24 @@ For Combat version:
 
 - IC3Net
 ```
-python -u main.py --env_name starcraft --task_type combat --nagents 10 --num_epochs 1000 --hid_size 128 --lrate 0.002 --max_steps 60 --nthreads 16 --torchcraft_dir=~/Public/TorchCraft --frame_skip 8 --nenemies 3 --our_unit_type 0 --enemy_unit_type 65 --init_range_end 150 --ic3net --recurrent --rnn_type LSTM --detach_gap 10 --explore_vision 10 --step_size 16
+python -u main.py --env_name starcraft --task_type combat --nagents 10 --num_epochs 1000 --hid_size 128 --lrate 0.002 --max_steps 60 --nprocesses 16 --torchcraft_dir=~/Public/TorchCraft --frame_skip 8 --nenemies 3 --our_unit_type 0 --enemy_unit_type 65 --init_range_end 150 --ic3net --recurrent --rnn_type LSTM --detach_gap 10 --explore_vision 10 --step_size 16
 ```
 
 - CommNet
 
 ```
-python -u main.py --env_name starcraft --task_type combat --nagents 10 --num_epochs 1000 --hid_size 128 --lrate 0.002 --max_steps 60 --nthreads 16 --torchcraft_dir=~/Public/TorchCraft --frame_skip 8 --nenemies 3 --our_unit_type 0 --enemy_unit_type 65 --init_range_end 150 --commnet --recurrent --rnn_type LSTM --detach_gap 10 --explore_vision 10 --step_size 16
+python -u main.py --env_name starcraft --task_type combat --nagents 10 --num_epochs 1000 --hid_size 128 --lrate 0.002 --max_steps 60 --nprocesses 16 --torchcraft_dir=~/Public/TorchCraft --frame_skip 8 --nenemies 3 --our_unit_type 0 --enemy_unit_type 65 --init_range_end 150 --commnet --recurrent --rnn_type LSTM --detach_gap 10 --explore_vision 10 --step_size 16
 ```
 
 
 - IRIC
 ```
-python -u main.py --env_name starcraft --task_type combat --nagents 10 --num_epochs 1000 --hid_size 128 --lrate 0.002 --max_steps 60 --nthreads 16 --torchcraft_dir=~/Public/TorchCraft --frame_skip 8 --nenemies 3 --our_unit_type 0 --enemy_unit_type 65 --init_range_end 150 --mean_ratio 0 --recurrent --rnn_type LSTM --detach_gap 10 --explore_vision 10 --step_size 16
+python -u main.py --env_name starcraft --task_type combat --nagents 10 --num_epochs 1000 --hid_size 128 --lrate 0.002 --max_steps 60 --nprocesses 16 --torchcraft_dir=~/Public/TorchCraft --frame_skip 8 --nenemies 3 --our_unit_type 0 --enemy_unit_type 65 --init_range_end 150 --mean_ratio 0 --recurrent --rnn_type LSTM --detach_gap 10 --explore_vision 10 --step_size 16
 ```
 
 - IC
 ```
-python -u main.py --env_name starcraft --task_type combat --nagents 10 --num_epochs 1000 --hid_size 128 --lrate 0.002 --max_steps 60 --nthreads 16 --torchcraft_dir=~/Public/TorchCraft --frame_skip 8 --nenemies 3 --our_unit_type 0 --enemy_unit_type 65 --init_range_end 150 --recurrent --rnn_type LSTM --detach_gap 10 --explore_vision 10 --step_size 16
+python -u main.py --env_name starcraft --task_type combat --nagents 10 --num_epochs 1000 --hid_size 128 --lrate 0.002 --max_steps 60 --nprocesses 16 --torchcraft_dir=~/Public/TorchCraft --frame_skip 8 --nenemies 3 --our_unit_type 0 --enemy_unit_type 65 --init_range_end 150 --recurrent --rnn_type LSTM --detach_gap 10 --explore_vision 10 --step_size 16
 ```
 
 ## Contributors

@@ -241,7 +241,7 @@ class Trainer(object):
         batch = Transition(*zip(*batch))
         return batch, self.stats
 
-    # only used when nthreads=1
+    # only used when nprocesses=1
     def train_batch(self, epoch):
         batch, stat = self.run_batch(epoch)
         self.optimizer.zero_grad()
