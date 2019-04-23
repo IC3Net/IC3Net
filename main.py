@@ -117,6 +117,10 @@ if args.ic3net:
     args.hard_attn = 1
     args.mean_ratio = 0
 
+    # For TJ set comm action to 1 as specified in paper to showcase
+    # importance of individual rewards even in cooperative games
+    if args.env_name == "traffic_junction":
+        args.comm_action_one = True
 # Enemy comm
 args.nfriendly = args.nagents
 if hasattr(args, 'enemy_comm') and args.enemy_comm:
