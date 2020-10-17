@@ -107,7 +107,7 @@ class CommNetMLP(nn.Module):
             num_agents_alive = n
 
         agent_mask = agent_mask.view(1, 1, n)
-        agent_mask = agent_mask.expand(batch_size, n, n).unsqueeze(-1)
+        agent_mask = agent_mask.expand(batch_size, n, n).clone().unsqueeze(-1)
 
         return num_agents_alive, agent_mask
 
