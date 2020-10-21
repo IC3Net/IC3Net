@@ -108,6 +108,9 @@ parser.add_argument('--advantages_per_action', default=False, action='store_true
 parser.add_argument('--share_weights', default=False, action='store_true',
                     help='Share weights for hops')
 
+parser.add_argument('--transformer', action='store_true', default=False,
+                    help="using transformer encoder")
+
 
 init_args_for_env(parser)
 args = parser.parse_args()
@@ -293,3 +296,4 @@ if sys.flags.interactive == 0 and args.nprocesses > 1:
     trainer.quit()
     import os
     os._exit(0)
+

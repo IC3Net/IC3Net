@@ -95,6 +95,20 @@ class CommNetMLP(nn.Module):
 
         self.value_head = nn.Linear(self.hid_size, 1)
 
+        if self.args.transformer:
+            encoder_layer = nn.TransformerEncoderLayer(d_model=self.hid_size, nhead=2)
+            self.transformer_encoder = nn.TransformerEncoder(encoder_layer, num_layers=3)
+
+        # self.self_attn = nn.MultiheadAttention(self.hid_size, 2, dropout=0.1)
+        # # Implementation of Feedforward model
+        # self.linear1_att = nn.Linear(self.hid_size, 2048)
+        # self.dropout_att = nn.Dropout(0.1)
+        # self.linear2_att = nn.Linear(2048, self.hid_size)
+        #
+        # self.dropout1_att = nn.Dropout(0.1)
+        # self.dropout2_att = nn.Dropout(0.1)
+        # self.ReLU_att = nn.ReLU()
+
 
     def get_agent_mask(self, batch_size, info):
         n = self.nagents
@@ -106,10 +120,11 @@ class CommNetMLP(nn.Module):
             agent_mask = torch.ones(n)
             num_agents_alive = n
 
+        agent_mask_1_dim = agent_mask
         agent_mask = agent_mask.view(1, 1, n)
         agent_mask = agent_mask.expand(batch_size, n, n).clone().unsqueeze(-1)
 
-        return num_agents_alive, agent_mask
+        return num_agents_alive, agent_mask, agent_mask_1_dim
 
     def forward_state_encoder(self, x):
         hidden_state, cell_state = None, None
@@ -165,7 +180,7 @@ class CommNetMLP(nn.Module):
         batch_size = x.size()[0]
         n = self.nagents
 
-        num_agents_alive, agent_mask = self.get_agent_mask(batch_size, info)
+        num_agents_alive, agent_mask, agent_mask_1_dim = self.get_agent_mask(batch_size, info) #Return vehs in env
 
         # Hard Attention - action whether an agent communicates or not
         if self.args.hard_attn:
@@ -180,29 +195,49 @@ class CommNetMLP(nn.Module):
             # Choose current or prev depending on recurrent
             comm = hidden_state.view(batch_size, n, self.hid_size) if self.args.recurrent else hidden_state
 
-            # Get the next communication vector based on next hidden state
-            comm = comm.unsqueeze(-2).expand(-1, n, n, self.hid_size)
+            if self.args.transformer:
+                if num_agents_alive == 0:
+                    comm_sum = torch.zeros(comm.size())
+                else:
+                    # print(agent_mask_1_dim)
+                    agent_mask = agent_mask_1_dim.unsqueeze(-1)
+                    agent_mask = agent_mask.expand_as(comm)
+                    src_mask = agent_mask_1_dim.view(batch_size, n).int()
+                    src_mask = src_mask ^ torch.ones(src_mask.size()).int()
+                    # print(src_mask.int())
 
-            # Create mask for masking self communication
-            mask = self.comm_mask.view(1, n, n)
-            mask = mask.expand(comm.shape[0], n, n)
-            mask = mask.unsqueeze(-1)
+                    comm = comm * agent_mask
+                    # comm_sum = self.att_block(comm.transpose(0, 1))
+                    # print(comm)
+                    comm_sum = self.transformer_encoder(comm.transpose(0, 1), src_key_padding_mask=src_mask)
+                    comm_sum = comm_sum.transpose(0, 1)
 
-            mask = mask.expand_as(comm)
-            comm = comm * mask
+                    comm_sum = comm_sum * agent_mask
+                # print(comm_sum)
+            else:
+                # Get the next communication vector based on next hidden state
+                comm = comm.unsqueeze(-2).expand(-1, n, n, self.hid_size)
 
-            if hasattr(self.args, 'comm_mode') and self.args.comm_mode == 'avg' \
-                and num_agents_alive > 1:
-                comm = comm / (num_agents_alive - 1)
+                # Create mask for masking self communication
+                mask = self.comm_mask.view(1, n, n)
+                mask = mask.expand(comm.shape[0], n, n)
+                mask = mask.unsqueeze(-1)
 
-            # Mask comm_in
-            # Mask communcation from dead agents
-            comm = comm * agent_mask
-            # Mask communication to dead agents
-            comm = comm * agent_mask_transpose
+                mask = mask.expand_as(comm)
+                comm = comm * mask
 
-            # Combine all of C_j for an ith agent which essentially are h_j
-            comm_sum = comm.sum(dim=1)
+                if hasattr(self.args, 'comm_mode') and self.args.comm_mode == 'avg' \
+                    and num_agents_alive > 1:
+                    comm = comm / (num_agents_alive - 1)
+
+                # Mask comm_in
+                # Mask communcation from dead agents
+                comm = comm * agent_mask
+                # Mask communication to dead agents
+                comm = comm * agent_mask_transpose
+
+                # Combine all of C_j for an ith agent which essentially are h_j
+                comm_sum = comm.sum(dim=1)
             c = self.C_modules[i](comm_sum)
 
 
@@ -252,3 +287,11 @@ class CommNetMLP(nn.Module):
         return tuple(( torch.zeros(batch_size * self.nagents, self.hid_size, requires_grad=True),
                        torch.zeros(batch_size * self.nagents, self.hid_size, requires_grad=True)))
 
+    # def att_block(self, src):
+    #     src2 = self.self_attn(src, src, src)[0]
+    #     src = src + self.dropout1_att(src2)
+    #     # src = self.norm1(src)
+    #     src2 = self.linear2_att(self.dropout_att(self.ReLU_att(self.linear1_att(src))))
+    #     src = src + self.dropout2_att(src2)
+    #     # src = self.norm2(src)
+    #     return src

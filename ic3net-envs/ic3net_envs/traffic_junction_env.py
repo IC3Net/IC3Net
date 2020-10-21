@@ -73,7 +73,7 @@ class TrafficJunctionEnv(gym.Env):
                          help="when to make the game hardest [0]")
         env.add_argument('--difficulty', type=str, default='easy',
                          help="Difficulty level, easy|medium|hard")
-        env.add_argument('--vocab_type', type=str, default='bool',
+        env.add_argument('--vocab_type', type=str, default='scalar',
                          help="Type of location vector to use, bool|scalar")
 
 
