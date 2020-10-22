@@ -110,6 +110,8 @@ parser.add_argument('--share_weights', default=False, action='store_true',
 
 parser.add_argument('--transformer', action='store_true', default=False,
                     help="using transformer encoder")
+parser.add_argument('--comm_round', default=1, type=int,
+                    help="Communication round")
 
 
 init_args_for_env(parser)

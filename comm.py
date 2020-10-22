@@ -93,13 +93,15 @@ class CommNetMLP(nn.Module):
         # Init weights for linear layers
         # self.apply(self.init_weights)
 
-        self.value_head = nn.Linear(self.hid_size, 1)
+        self.value_head = nn.Linear(self.hid_size * 2, 1)
 
         if self.args.transformer:
             encoder_layer = nn.TransformerEncoderLayer(d_model=self.hid_size, nhead=2)
             self.transformer_encoder = nn.TransformerEncoder(encoder_layer, num_layers=3)
 
-        # self.self_attn = nn.MultiheadAttention(self.hid_size, 2, dropout=0.1)
+        self.self_attn = nn.MultiheadAttention(self.hid_size, 1, dropout=0)
+        self.multi_round_comm_FC = nn.Linear(self.hid_size* 2, self.hid_size)
+        self.multi_round_comm_active = nn.ReLU()
         # # Implementation of Feedforward model
         # self.linear1_att = nn.Linear(self.hid_size, 2048)
         # self.dropout_att = nn.Dropout(0.1)
@@ -193,6 +195,8 @@ class CommNetMLP(nn.Module):
 
         for i in range(self.comm_passes):
             # Choose current or prev depending on recurrent
+            multi_comm_hid = hidden_state.view(batch_size, n, self.hid_size) if self.args.recurrent else hidden_state
+            multi_comm_hid = multi_comm_hid.transpose(0, 1)
             comm = hidden_state.view(batch_size, n, self.hid_size) if self.args.recurrent else hidden_state
 
             if self.args.transformer:
@@ -204,13 +208,17 @@ class CommNetMLP(nn.Module):
                     agent_mask = agent_mask.expand_as(comm)
                     src_mask = agent_mask_1_dim.view(batch_size, n).int()
                     src_mask = src_mask ^ torch.ones(src_mask.size()).int()
-                    # print(src_mask.int())
 
                     comm = comm * agent_mask
                     # comm_sum = self.att_block(comm.transpose(0, 1))
                     # print(comm)
-                    comm_sum = self.transformer_encoder(comm.transpose(0, 1), src_key_padding_mask=src_mask)
-                    comm_sum = comm_sum.transpose(0, 1)
+                    comm = comm.transpose(0, 1)
+                    for _ in range(self.args.comm_round):
+                        comm = self.self_attn(comm, comm, comm, key_padding_mask=src_mask)[0]
+                        # comm = self.self_attn(multi_comm_hid, multi_comm_hid, multi_comm_hid, key_padding_mask=src_mask)[0]
+                        comm = self.multi_round_comm_active(self.multi_round_comm_FC(torch.cat((multi_comm_hid, comm), dim=2)))
+                        # comm_sum = self.transformer_encoder(comm, src_key_padding_mask=src_mask)
+                    comm_sum = comm.transpose(0, 1)
 
                     comm_sum = comm_sum * agent_mask
                 # print(comm_sum)
@@ -260,8 +268,9 @@ class CommNetMLP(nn.Module):
 
         # v = torch.stack([self.value_head(hidden_state[:, i, :]) for i in range(n)])
         # v = v.view(hidden_state.size(0), n, -1)
-        value_head = self.value_head(hidden_state)
+
         h = hidden_state.view(batch_size, n, self.hid_size)
+        value_head = self.value_head(torch.cat((h, c), dim=2))
 
         if self.continuous:
             action_mean = self.action_mean(h)
