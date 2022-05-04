@@ -210,7 +210,7 @@ class TrafficJunctionEnv(gym.Env):
         obs = self._get_obs()
         return obs
 
-    def step(self, action):
+    def step(self, action: int):
         """
         The agents(car) take a step in the environment.
 
@@ -458,8 +458,11 @@ class TrafficJunctionEnv(gym.Env):
         return True
 
 
-# if act is true , the vertical car is allow to get a pass
-    def _take_action(self, idx, act):
+# if act is 0 , the vertical car is allow to get a pass
+# if act is 1 , the horizontal car is allow to get a pass
+# if act is 2 , all car is NOT allow to get a pass
+
+    def _take_action(self, idx, act: int):
         # non-active car
         if self.alive_mask[idx] == 0:
             return
@@ -496,10 +499,13 @@ class TrafficJunctionEnv(gym.Env):
             raise RuntimeError("Out of boud car path")
 
         # GAS or move
-        if act == False and vertical and self.car_route_loc[idx] + 1 == ((self.dim - self.cross_num) / 2):
+        if act == 1 and vertical and self.car_route_loc[idx] + 1 == ((self.dim - self.cross_num) / 2):
             self.car_last_act[idx] = 1
             return
-        elif act == True and (not vertical) and self.car_route_loc[idx] + 1 == ((self.dim - self.cross_num) / 2):
+        elif act == 0 and (not vertical) and self.car_route_loc[idx] + 1 == ((self.dim - self.cross_num) / 2):
+            self.car_last_act[idx] = 1
+            return
+        elif act == 2 and self.car_route_loc[idx] + 1 == ((self.dim - self.cross_num) / 2):
             self.car_last_act[idx] = 1
             return
         else:

@@ -64,7 +64,7 @@ class Trainer(object):
 
             action = select_action(self.args, action_out)
             action, actual = translate_action(self.args, self.env, action)
-            next_state, reward, done, info = self.env.step(False)
+            next_state, reward, done, info = self.env.step(2)
 
             # store comm_action in info for next step
             if self.args.hard_attn and self.args.commnet:
