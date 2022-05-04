@@ -59,6 +59,17 @@ parser.add_argument('--nactions', default='1', type=str,
                     help='the number of agent actions (0 for continuous). Use N:M:K for multiple actions')
 parser.add_argument('--action_scale', default=1.0, type=float,
                     help='scale action output from model')
+parser.add_argument('--dim', default=5, type=int,
+                    help='length of road')
+parser.add_argument('--vision', default=0, type=int,
+                    help='vision')
+parser.add_argument('--add_rate_min', default=0.1, type=float)
+parser.add_argument('--add_rate_max', default=0.3, type=float)
+parser.add_argument('--curr_start', default=250, type=int)
+parser.add_argument('--curr_end', default=1250, type=int)
+parser.add_argument('--difficulty', default='easy', type=str)
+parser.add_argument('--vocab_type', default=True, type=bool, help="Not sure what is it")
+
 # other
 parser.add_argument('--plot', action='store_true', default=False,
                     help='plot training progress')
