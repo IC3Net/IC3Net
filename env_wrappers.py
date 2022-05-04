@@ -73,8 +73,8 @@ class GymWrapper(object):
     def step(self, action):
         # TODO: Modify all environments to take list of action
         # instead of doing this
-        if self.dim_actions == 1:
-            action = action[0]
+        # if self.dim_actions == 1:
+        # action = action[0]
         obs, r, done, info = self.env.step(action)
         obs = self._flatten_obs(obs)
         return (obs, r, done, info)
