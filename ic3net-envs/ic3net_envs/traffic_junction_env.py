@@ -644,8 +644,12 @@ class TrafficJunctionEnv(gym.Env):
         grid.insert(axis, idx)
         return tuple(grid)
 
-    def reward_terminal(self):
-        return np.zeros_like(self._get_reward())
+    def reward_terminal(self, is_dqn):
+        r = self._get_reward()
+        if is_dqn is False:
+            return np.zeros_like(r["ic3net_reward"])
+        else:
+            return r["dqn_reward"]
 
     def _choose_dead(self):
         # all idx

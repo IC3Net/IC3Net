@@ -80,9 +80,9 @@ class GymWrapper(object):
         obs = self._flatten_obs(obs)
         return (obs, r['dqn_reward'] if is_dqn is True else r["ic3net_reward"], done, info)
 
-    def reward_terminal(self):
+    def reward_terminal(self, is_dqn=False):
         if hasattr(self.env, 'reward_terminal'):
-            return self.env.reward_terminal()
+            return self.env.reward_terminal(is_dqn)
         else:
             return np.zeros(1)
 
