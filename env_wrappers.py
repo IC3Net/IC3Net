@@ -70,18 +70,19 @@ class GymWrapper(object):
     def end_display(self):
         self.env.exit_render()
 
-    def step(self, action):
+    def step(self,  lamp_action: int = 0, is_dqn=False, car_action_list=[]):
         # TODO: Modify all environments to take list of action
         # instead of doing this
-        # if self.dim_actions == 1:
-        # action = action[0]
-        obs, r, done, info = self.env.step(action)
+        if self.dim_actions == 1:
+            car_action_list = car_action_list[0]
+        obs, r, done, info = self.env.step(
+            lamp_action, is_dqn, car_action_list)
         obs = self._flatten_obs(obs)
-        return (obs, r, done, info)
+        return (obs, r['dqn_reward'] if is_dqn is True else r["ic3net_reward"], done, info)
 
-    def reward_terminal(self):
+    def reward_terminal(self, is_dqn=False):
         if hasattr(self.env, 'reward_terminal'):
-            return self.env.reward_terminal()
+            return self.env.reward_terminal(is_dqn)
         else:
             return np.zeros(1)
 
