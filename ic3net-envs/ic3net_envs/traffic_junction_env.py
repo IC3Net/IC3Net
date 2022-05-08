@@ -16,15 +16,52 @@ Design Decisions:
 """
 
 # core modules
+import enum
+from functools import reduce
 import random
 import math
 import curses
+from tkinter.tix import Tree
+from typing import Dict, Tuple
 
 # 3rd party modules
 import gym
 import numpy as np
 from gym import spaces
 from ic3net_envs.traffic_helper import *
+
+
+# FIXME
+# CarQueue is deprecated, but remains for future work :)
+class CarQueue(object):
+    def __init__(self):
+        self.car_queue = []
+        self.timmer = 0
+        self.in_set = set()
+        return
+
+    def try_push(self, car_idx):
+        if car_idx not in self.in_set:
+            self.car_queue.append((car_idx, self.timmer))
+            self.in_set.add(car_idx)
+        return
+
+    def try_pop(self, car_idx):
+        if len(self.car_queue) == 0 or car_idx not in self.in_set:
+            return
+        self.in_set.pop(self.car_queue[0][0])
+        self.car_queue = self.car_queue[1:]
+        return
+
+    def add_timmer(self):
+        self.timmer += 1
+        return
+
+    def reset(self):
+        self.car_queue = []
+        self.timmer = 0
+        self.in_set = set()
+        return
 
 
 def nPr(n, r):
@@ -87,6 +124,8 @@ class TrafficJunctionEnv(gym.Env):
 
         self.ncar = args.nagents
         self.dims = dims = (self.dim, self.dim)
+        self.max_steps = args.max_steps
+
         difficulty = args.difficulty
         vision = args.vision
 
@@ -159,6 +198,12 @@ class TrafficJunctionEnv(gym.Env):
         self.cross_num = 1 if self.difficulty == "easy" else (
             2 if self.difficulty == "medium" else 3)
 
+        self.car_queue = [CarQueue()] * (self.cross_num*2)
+
+        self.signal_lamp = 0
+
+        self.car_disobey_signal = np.zeros(self.ncar)
+
         return
 
     def reset(self, epoch=None):
@@ -199,6 +244,13 @@ class TrafficJunctionEnv(gym.Env):
         # stat - like success ratio
         self.stat = dict()
 
+        for o in self.car_queue:
+            o.reset()
+
+        self.signal_lamp = 0
+
+        self.car_disobey_signal = np.zeros(self.ncar)
+
         # set add rate according to the curriculum
         epoch_range = (self.curr_end - self.curr_start)
         add_rate_range = (self.add_rate_max - self.add_rate_min)
@@ -210,7 +262,7 @@ class TrafficJunctionEnv(gym.Env):
         obs = self._get_obs()
         return obs
 
-    def step(self, action: int):
+    def step(self, lamp_action: int = 0, is_dqn=True, car_action_list: list = []):
         """
         The agents(car) take a step in the environment.
 
@@ -229,11 +281,18 @@ class TrafficJunctionEnv(gym.Env):
         if self.episode_over:
             raise RuntimeError("Episode is done")
 
+        self.signal_lamp = lamp_action
+
         # No one is completed before taking action
         self.is_completed = np.zeros(self.ncar)
 
-        for i in range(0, self.ncar):
-            self._take_action(i, action)
+        if is_dqn is False:
+            car_action_list = np.array(car_action_list).squeeze()
+            for i, a in enumerate(car_action_list):
+                self._take_action(i, lamp_action, is_dqn, a)
+        else:
+            for i in range(0, self.ncar):
+                self._take_action(i, lamp_action, is_dqn, car_action_list[i])
 
         self._add_cars()
 
@@ -462,13 +521,17 @@ class TrafficJunctionEnv(gym.Env):
 # if act is 1 , the horizontal car is allow to get a pass
 # if act is 2 , all car is NOT allow to get a pass
 
-    def _take_action(self, idx, act: int):
+    def _take_action(self, idx, lamp_action: int = 0, is_dqn=True, car_action: int = 0):
         # non-active car
         if self.alive_mask[idx] == 0:
             return
 
         # add wait time for active cars
         self.wait[idx] += 1
+
+        if is_dqn is False and car_action == 1:
+            self.car_last_act[idx] = 1
+            return
 
         # minus grid position to test if this car runs vertical
         vertical = False if np.subtract(
@@ -478,8 +541,10 @@ class TrafficJunctionEnv(gym.Env):
         # car see a red light or there is a car ahead
         # check has_car matrix
         loc = self.car_route_loc[idx]  # location of curr car
-        if loc < len(self.chosen_path[idx]) - 1:  # should we check next car
-            if self.has_car[self.route_id[idx]][loc + 1] == 1:
+        route_id = self.route_id[idx]
+        # should we check next car
+        if is_dqn is True and loc < len(self.chosen_path[idx]) - 1:
+            if self.has_car[self.route_id[idx]][loc + 1] != 0:
                 self.car_last_act[idx] = 1
                 return
 
@@ -492,41 +557,61 @@ class TrafficJunctionEnv(gym.Env):
             # put it at dead loc
             self.car_loc[idx] = np.zeros(len(self.dims), dtype=int)
             self.is_completed[idx] = 1
-            self.has_car[self.route_id[idx]][loc] = 0
+            self.has_car[self.route_id[idx]][loc] -= 1
             return
         elif loc + 1 > len(self.chosen_path[idx]):
             print(loc)
             raise RuntimeError("Out of boud car path")
 
         # GAS or move
-        if act == 1 and vertical and self.car_route_loc[idx] + 1 == ((self.dim - self.cross_num) / 2):
-            self.car_last_act[idx] = 1
-            return
-        elif act == 0 and (not vertical) and self.car_route_loc[idx] + 1 == ((self.dim - self.cross_num) / 2):
-            self.car_last_act[idx] = 1
-            return
-        elif act == 2 and self.car_route_loc[idx] + 1 == ((self.dim - self.cross_num) / 2):
-            self.car_last_act[idx] = 1
-            return
-        else:
-            prev = self.car_route_loc[idx]
-            self.car_route_loc[idx] += 1
-            curr = self.car_route_loc[idx]
+        if lamp_action == 1 and vertical and self.car_route_loc[idx] + 1 == ((self.dim - self.cross_num) / 2):
+            if is_dqn is True:
+                self.car_last_act[idx] = 1
+                return
+            self.car_disobey_signal[idx] = 1
+        elif lamp_action == 0 and (not vertical) and self.car_route_loc[idx] + 1 == ((self.dim - self.cross_num) / 2):
+            if is_dqn is True:
+                self.car_last_act[idx] = 1
+                return
+            self.car_disobey_signal[idx] = 1
+        elif lamp_action == 2 and self.car_route_loc[idx] + 1 == ((self.dim - self.cross_num) / 2):
+            if is_dqn is True:
+                self.car_last_act[idx] = 1
+                return
+            self.car_disobey_signal[idx] = 1
 
-            prev = self.chosen_path[idx][prev]
-            curr = self.chosen_path[idx][curr]
+        prev = self.car_route_loc[idx]
+        self.car_route_loc[idx] += 1
+        curr = self.car_route_loc[idx]
 
-            # assert abs(curr[0] - prev[0]) + abs(curr[1] - prev[1]) == 1 or curr_path = 0
-            self.car_loc[idx] = curr
+        prev = self.chosen_path[idx][prev]
+        curr = self.chosen_path[idx][curr]
 
-            self.has_car[self.route_id[idx]][self.car_route_loc[idx] - 1] = 0
-            self.has_car[self.route_id[idx]][self.car_route_loc[idx]] = 1
+        # assert abs(curr[0] - prev[0]) + abs(curr[1] - prev[1]) == 1 or curr_path = 0
+        self.car_loc[idx] = curr
 
-            # Change last act for color:
-            self.car_last_act[idx] = 0
+        self.has_car[self.route_id[idx]][self.car_route_loc[idx] - 1] -= 1
+        self.has_car[self.route_id[idx]][self.car_route_loc[idx]] += 1
+
+        # Change last act for color:
+        self.car_last_act[idx] = 0
+        self.car_queue[route_id].try_pop(idx)
+
+        if self.car_last_act[idx] == 1:
+            self.car_queue[route_id].try_push(idx)
+
+        for o in self.car_queue:
+            o.add_timmer()
+
+    # @return:
+    # @return.1 penalty of this episode
+    # @return.2 traffic junction sum of this episode
 
     def _get_reward(self):
+        output = {}
+
         reward = np.full(self.ncar, self.TIMESTEP_PENALTY) * self.wait
+        # car_queue_reward = {}
 
         for i, l in enumerate(self.car_loc):
             if (len(np.where(np.all(self.car_loc[:i] == l, axis=1))[0]) or
@@ -534,8 +619,15 @@ class TrafficJunctionEnv(gym.Env):
                 reward[i] += self.CRASH_PENALTY
                 self.has_failed = 1
 
-        reward = self.alive_mask * reward
-        return reward
+        # for i, o in enumerate(self.car_queue):
+        #     car_queue_reward[i] = sum([o.timmer - x[1] for x in o.add_timmer])
+
+        output["ic3net_reward"] = self.alive_mask * \
+            (reward + self.car_disobey_signal * self.CRASH_PENALTY)
+        output["dqn_reward"] = np.sum(
+            np.full(self.ncar, -1) * self.wait / self.max_steps / self.ncar)
+
+        return output
 
     def _onehot_initialization(self, a):
         if self.vocab_type == 'bool':
