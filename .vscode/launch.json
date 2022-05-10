@@ -3,18 +3,31 @@
     // 悬停以查看现有属性的描述。
     // 欲了解更多信息，请访问: https://go.microsoft.com/fwlink/?linkid=830387
     "version": "0.2.0",
-    "configurations": [{
-        "name": "Python: 远程连接",
-        "type": "python",
-        "request": "attach",
-        "connect": {
-            "host": "localhost",
-            "port": 5678
-        },
-        "pathMappings": [{
-            "localRoot": "${workspaceFolder}",
-            "remoteRoot": "."
-        }],
-        "justMyCode": true
-    }]
+    "configurations": [
+        {
+            "name": "Python: 远程连接",
+            "type": "python",
+            "request": "attach",
+            "connect": {
+                "host": "localhost",
+                "port": 5678
+            },
+            "pathMappings": [
+                {
+                    "localRoot": "${workspaceFolder}",
+                    "remoteRoot": "."
+                }
+            ],
+            "justMyCode": true
+        },{          
+            "name": "Python: Current File",
+            "type": "python",
+            "request": "launch",
+            "program": "main.py",
+            "console": "integratedTerminal",
+            "cwd": "${workspaceFolder}",
+            "args": [
+                ""
+            ]
+        }]
 }
