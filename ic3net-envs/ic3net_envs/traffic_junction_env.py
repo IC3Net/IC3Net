@@ -200,7 +200,10 @@ class TrafficJunctionEnv(gym.Env):
 
         self.car_queue = [CarQueue()] * (self.cross_num*2)
 
-        self.signal_lamp = 0
+        # 00 , the vertical car is allow to get a pass
+        # 01 , the horizontal car is allow to get a pass
+        # 10 , all car is NOT allow to get a pass
+        self.signal_lamp = np.zeros(2)
 
         self.car_disobey_signal = np.zeros(self.ncar)
 
@@ -216,6 +219,11 @@ class TrafficJunctionEnv(gym.Env):
         """
         self.episode_over = False
         self.has_failed = 0
+
+        # ! we encode this agent mask :
+        # ! 0: agent
+        # ! 1: human
+        self.agent_mask = np.zeros(self.ncar)
 
         self.alive_mask = np.zeros(self.ncar)
         self.wait = np.zeros(self.ncar)
@@ -247,7 +255,7 @@ class TrafficJunctionEnv(gym.Env):
         for o in self.car_queue:
             o.reset()
 
-        self.signal_lamp = 0
+        self.signal_lamp = np.zeros(2)
 
         self.car_disobey_signal = np.zeros(self.ncar)
 
@@ -281,7 +289,10 @@ class TrafficJunctionEnv(gym.Env):
         if self.episode_over:
             raise RuntimeError("Episode is done")
 
-        self.signal_lamp = lamp_action
+        if lamp_action == 1:
+            self.signal_lamp[0] = 1
+        if lamp_action == 2:
+            self.signal_lamp[1] = 1
 
         # No one is completed before taking action
         self.is_completed = np.zeros(self.ncar)
@@ -301,6 +312,8 @@ class TrafficJunctionEnv(gym.Env):
 
         debug = {'car_loc': self.car_loc,
                  'alive_mask': np.copy(self.alive_mask),
+                 "agent_mask": np.copy(self.agent_mask),
+                 "signal_lamp": np.copy(self.signal_lamp),
                  'wait': self.wait,
                  'cars_in_sys': self.cars_in_sys,
                  'is_completed': np.copy(self.is_completed)}
@@ -459,6 +472,10 @@ class TrafficJunctionEnv(gym.Env):
                     self.alive_mask[idx] = 0
                     return
                 else:
+                    # make it ashuman
+                    if np.random.uniform() <= self.add_rate:
+                        self.agent_mask[idx] = 1
+
                     self.route_id[idx] = r_i
                     self.chosen_path[idx] = routes[p_i]
 
@@ -521,10 +538,13 @@ class TrafficJunctionEnv(gym.Env):
 # if act is 1 , the horizontal car is allow to get a pass
 # if act is 2 , all car is NOT allow to get a pass
 
-    def _take_action(self, idx, lamp_action: int = 0, is_dqn=True, car_action: int = 0):
+    def _take_action(self, idx, lamp_action: int = 0, dqn_mask=True, car_action: int = 0):
         # non-active car
         if self.alive_mask[idx] == 0:
             return
+
+        is_dqn = True if (
+            dqn_mask is True or self.agent_mask[idx] == 1) else False
 
         # add wait time for active cars
         self.wait[idx] += 1
@@ -552,6 +572,7 @@ class TrafficJunctionEnv(gym.Env):
         if loc + 1 == len(self.chosen_path[idx]):
             self.cars_in_sys -= 1
             self.alive_mask[idx] = 0
+            self.agent_mask[idx] = 0
             self.wait[idx] = 0
 
             # put it at dead loc
