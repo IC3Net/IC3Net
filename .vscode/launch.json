@@ -27,7 +27,26 @@
             "console": "integratedTerminal",
             "cwd": "${workspaceFolder}",
             "args": [
-                ""
+                "--env_name=traffic_junction",
+                "--nagents=5",
+                "--nprocesses=1",
+                "--num_epochs=500",
+                "--hid_size=128",
+                "--detach_gap=10",
+                "--lrate=0.001",
+                "--dim=6",
+                "--max_steps=40",
+                "--vision=0",
+                "--ic3net=True",
+                "--recurrent",
+                "--add_rate_min=0.1",
+                "--add_rate_max=0.3",
+                "--curr_start=250",
+                "--curr_end=1250",
+                "--difficulty=medium",
+                "--observation_dim=35",
+                "--epoch_size=1",
+                "--display=True"
             ]
         }]
 }

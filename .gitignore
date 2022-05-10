@@ -105,7 +105,6 @@ ENV/
 *.pt
 
 # customize
-.vscode
 nohup.out
 checkpoints
 runs

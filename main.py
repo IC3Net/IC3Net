@@ -81,7 +81,7 @@ parser.add_argument('--save_every', default=0, type=int,
                     help='save the model after every n_th epoch')
 parser.add_argument('--load', default='', type=str,
                     help='load the model')
-parser.add_argument('--display', action="store_true", default=False,
+parser.add_argument('--display', default=False, type=bool,
                     help='Display environment state')
 
 
@@ -89,9 +89,9 @@ parser.add_argument('--random', action='store_true', default=False,
                     help="enable random model")
 
 # CommNet specific args
-parser.add_argument('--commnet', action='store_true', default=False,
+parser.add_argument('--commnet', default=False, type=bool,
                     help="enable commnet model")
-parser.add_argument('--ic3net', action='store_true', default=False,
+parser.add_argument('--ic3net', default=True, type=bool,
                     help="enable commnet model")
 parser.add_argument('--nagents', type=int, default=1,
                     help="Number of agents (used in multiagent)")
@@ -118,6 +118,8 @@ parser.add_argument('--advantages_per_action', default=False, action='store_true
                     help='Whether to multipy log porb for each chosen action with advantages')
 parser.add_argument('--share_weights', default=False, action='store_true',
                     help='Share weights for hops')
+parser.add_argument('--observation_dim', default=35, type=int,
+                    help='dimmension of input state')
 
 
 init_args_for_env(parser)
@@ -142,7 +144,7 @@ if hasattr(args, 'enemy_comm') and args.enemy_comm:
 
 env = data.init(args.env_name, args, False)
 
-num_inputs = env.observation_dim
+num_inputs = args.observation_dim
 args.num_actions = env.num_actions
 
 # Multi-action
