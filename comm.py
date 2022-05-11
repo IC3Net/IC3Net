@@ -107,7 +107,7 @@ class CommNetMLP(nn.Module):
             num_agents_alive = n
 
         agent_mask = agent_mask.view(1, 1, n)
-        agent_mask = agent_mask.expand(batch_size, n, n).unsqueeze(-1)
+        agent_mask = agent_mask.expand(batch_size, n, n).clone().unsqueeze(-1)
 
         return num_agents_alive, agent_mask
 
@@ -170,7 +170,8 @@ class CommNetMLP(nn.Module):
         # Hard Attention - action whether an agent communicates or not
         if self.args.hard_attn:
             comm_action = torch.tensor(info['comm_action'])
-            comm_action_mask = comm_action.expand(batch_size, n, n).unsqueeze(-1)
+            comm_action_mask = comm_action.expand(
+                batch_size, n, n).clone().unsqueeze(-1)
             # action 1 is talk, 0 is silent i.e. act as dead for comm purposes.
             agent_mask *= comm_action_mask.double()
 

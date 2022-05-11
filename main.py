@@ -59,6 +59,17 @@ parser.add_argument('--nactions', default='1', type=str,
                     help='the number of agent actions (0 for continuous). Use N:M:K for multiple actions')
 parser.add_argument('--action_scale', default=1.0, type=float,
                     help='scale action output from model')
+parser.add_argument('--dim', default=5, type=int,
+                    help='length of road')
+parser.add_argument('--vision', default=0, type=int,
+                    help='vision')
+parser.add_argument('--add_rate_min', default=0.1, type=float)
+parser.add_argument('--add_rate_max', default=0.3, type=float)
+parser.add_argument('--curr_start', default=250, type=int)
+parser.add_argument('--curr_end', default=1250, type=int)
+parser.add_argument('--difficulty', default='easy', type=str)
+parser.add_argument('--vocab_type', default=True, type=bool, help="Not sure what is it")
+
 # other
 parser.add_argument('--plot', action='store_true', default=False,
                     help='plot training progress')
@@ -70,7 +81,7 @@ parser.add_argument('--save_every', default=0, type=int,
                     help='save the model after every n_th epoch')
 parser.add_argument('--load', default='', type=str,
                     help='load the model')
-parser.add_argument('--display', action="store_true", default=False,
+parser.add_argument('--display', default=False, type=bool,
                     help='Display environment state')
 
 
@@ -78,9 +89,9 @@ parser.add_argument('--random', action='store_true', default=False,
                     help="enable random model")
 
 # CommNet specific args
-parser.add_argument('--commnet', action='store_true', default=False,
+parser.add_argument('--commnet', default=False, type=bool,
                     help="enable commnet model")
-parser.add_argument('--ic3net', action='store_true', default=False,
+parser.add_argument('--ic3net', default=True, type=bool,
                     help="enable commnet model")
 parser.add_argument('--nagents', type=int, default=1,
                     help="Number of agents (used in multiagent)")
@@ -107,6 +118,8 @@ parser.add_argument('--advantages_per_action', default=False, action='store_true
                     help='Whether to multipy log porb for each chosen action with advantages')
 parser.add_argument('--share_weights', default=False, action='store_true',
                     help='Share weights for hops')
+parser.add_argument('--observation_dim', default=35, type=int,
+                    help='dimmension of input state')
 
 
 init_args_for_env(parser)
@@ -131,7 +144,7 @@ if hasattr(args, 'enemy_comm') and args.enemy_comm:
 
 env = data.init(args.env_name, args, False)
 
-num_inputs = env.observation_dim
+num_inputs = args.observation_dim
 args.num_actions = env.num_actions
 
 # Multi-action
@@ -204,6 +217,13 @@ if args.plot:
     vis = visdom.Visdom(env=args.plot_env)
 
 def run(num_epochs):
+    import debugpy
+    # 5678 is the default attach port in the VS Code debug configurations. Unless a host and port are specified, host defaults to 127.0.0.1
+    # debugpy.listen(5678)
+    # print("Waiting for debugger attach")
+    # debugpy.wait_for_client()
+    # debugpy.breakpoint()
+    # print('break on this line')
     for ep in range(num_epochs):
         epoch_begin_time = time.time()
         stat = dict()
