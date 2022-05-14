@@ -166,8 +166,8 @@ def get_routes(dims, grid, difficulty):
 
     arrival_points, finish_points, road_dir, junction = get_add_mat(dims, grid, difficulty)
 
-    n_turn1 = 3 # 0 - straight, 1-right, 2-left
-    n_turn2 = 1 if difficulty == 'medium' else 3
+    n_turn1 = 1  # 0 - straight, 1-right, 2-left
+    n_turn2 = 1  # if difficulty == 'medium' else 3
 
 
     routes=[]
