@@ -209,9 +209,12 @@ class CommNetMLP(nn.Module):
 
             if self.args.recurrent:
                 # skip connection - combine comm. matrix and encoded input for all agents
-                inp = x + c
+                inp = c.squeeze()
 
-                inp = inp.view(batch_size * n, self.hid_size)
+               # inp = x+c 
+#             我在这里乱改了很奇怪的东西，上面这行代码原来本来应该是inp = x + c
+  #              inp = inp.view(batch_size * n, self.hid_size)
+  # x {tensor} -- State of the agents (N x num_inputs)
 
                 output = self.f_module(inp, (hidden_state, cell_state))
 

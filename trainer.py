@@ -12,6 +12,9 @@ Transition = namedtuple('Transition', ('state', 'action', 'action_out', 'value',
 
 
 class Trainer(object):
+#0 for fixed phase,1 for minimize queue,2 for DQN"
+    traffic_light_mode = 0
+    
     def __init__(self, args, policy_net, env):
         self.args = args
         self.policy_net = policy_net
@@ -39,7 +42,8 @@ class Trainer(object):
         switch_t = -1
 
         prev_hid = torch.zeros(1, self.args.nagents, self.args.hid_size)
-
+        temp=0
+        phase = 8
         for t in range(self.args.max_steps):
             misc = dict()
             if t == 0 and self.args.hard_attn and self.args.commnet:
@@ -64,7 +68,14 @@ class Trainer(object):
 
             action = select_action(self.args, action_out)
             action, actual = translate_action(self.args, self.env, action)
-            next_state, reward, done, info = self.env.step(2)
+            if self.traffic_light_mode == 0:
+                if temp<phase:
+                    next_state, reward, done, info = self.env.step(0, False, actual)
+                    temp=temp+1
+                elif temp>=phase and temp<phase*2:
+                    next_state, reward, done, info = self.env.step(1, False, actual)
+                    temp=temp+1
+                else:temp = 0
 
             # store comm_action in info for next step
             if self.args.hard_attn and self.args.commnet:
